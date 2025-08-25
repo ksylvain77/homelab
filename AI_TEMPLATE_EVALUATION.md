@@ -137,6 +137,12 @@ This evaluation documents the AI development experience building a homelab monit
 
 **Template Recommendation**: Fix test coverage checker to properly recognize implemented tests or provide override mechanism for false negatives
 
+**RESOLUTION**: August 25, 2025 - **FUNDAMENTAL REDESIGN REQUIRED**
+After extensive analysis, the issue is not a "bug" but a fundamentally flawed approach. The custom test coverage checker is reinventing the wheel when mature Python libraries (coverage.py, pytest-cov) exist specifically for this purpose.
+
+**Decision**: Replace entire custom test coverage system with industry-standard tools in Branch 2.5.
+**Rationale**: Stop maintaining complex custom parsers when battle-tested libraries handle all edge cases reliably.
+
 ---
 
 ## AI Development Pattern Analysis
@@ -313,6 +319,24 @@ setup_github_repo() {
 **Roadmap Update Script**: Pattern matching assumes roadmap format different from what the template actually generates. Script reports success but makes no changes.
 
 **AI Impact**: Broken automation forces manual intervention, defeating the purpose of AI-native workflows.
+
+### 4. **Terminal Management Anti-Pattern** ⭐
+
+**Critical Behavioral Issue**. AI consistently creates new terminal sessions instead of reusing existing ones:
+
+**Problems**:
+
+- AI creates new terminal IDs for every command execution
+- Terminal output becomes fragmented across multiple sessions
+- User cannot see commands being executed in VS Code terminal interface
+- Breaks standard development workflow expectations
+- No guidance in template for proper terminal session management
+
+**Impact**: Destroys user experience and makes debugging impossible. Commands appear to run "invisibly" without proper terminal integration.
+
+**Observed Pattern**: AI repeatedly uses `run_in_terminal` with `isBackground=false` creating terminal IDs like `9c887756-112a-4436-bdc6-4be131dcffb0` instead of using existing terminal sessions.
+
+**Required Fix**: Template must include explicit guidance for AI terminal session management and reuse patterns.
 
 ### 2. **Template Abstraction Gap** ⭐⭐⭐
 
