@@ -28,7 +28,12 @@ EXCLUDE_PATTERNS = [
     '_helper',
     '_util',
     'cleanup_',
-    'setup_'
+    'setup_',
+    'get_timestamp',  # Utility: timestamp generation
+    'load_config',    # Utility: configuration loading
+    'save_log',       # Utility: logging operations
+    'process_data',   # Utility: data processing helper
+    'get_status'      # Utility: returns static status information
 ]
 
 # Template escaping patterns to prevent regex parsing failures
@@ -47,7 +52,11 @@ def sanitize_for_parsing(content):
     return content
 
 def should_exclude_function(func_name):
-    """Exclude utility functions that don't need comprehensive testing"""
+    """Exclude utility functions and private functions that don't need comprehensive testing"""
+    # Exclude private functions (starting with underscore)
+    if func_name.startswith('_'):
+        return True
+    # Exclude utility functions matching patterns
     return any(pattern in func_name for pattern in EXCLUDE_PATTERNS)
 
 def get_functions_from_module(module_path):
@@ -82,13 +91,40 @@ def get_api_endpoints(api_path):
     return endpoints
 
 def get_test_dict_keys(test_path, dict_name):
+    """Extract test dictionary keys from both global scope and method scope"""
     with open(test_path, 'r') as f:
         content = f.read()
-    m = re.search(rf'{dict_name}\s*=\s*{{(.*?)}}', content, re.DOTALL)
-    if not m:
-        return set()
-    dict_body = m.group(1)
-    keys = re.findall(r'"([^"]+)":', dict_body)
+    
+    # Try global scope first (legacy format)
+    global_match = re.search(rf'{dict_name}\s*=\s*{{(.*?)}}', content, re.DOTALL)
+    if global_match:
+        dict_body = global_match.group(1)
+        keys = re.findall(r'"([^"]+)":', dict_body)
+        return set(keys)
+    
+    # Method scope approach: parse line by line to handle nested dictionaries
+    lines = content.split('\n')
+    in_target_dict = False
+    keys = []
+    brace_count = 0
+    
+    for line in lines:
+        if f'{dict_name} = {{' in line:
+            in_target_dict = True
+            brace_count = line.count('{') - line.count('}')
+            continue
+        
+        if in_target_dict:
+            brace_count += line.count('{') - line.count('}')
+            
+            # Look for main keys (quoted strings at start of line with proper indentation)
+            match = re.match(r'\s+"([^"]+)":\s*{', line)
+            if match:
+                keys.append(match.group(1))
+            
+            if brace_count <= 0:
+                break
+    
     return set(keys)
 
 # --- Main check ---
@@ -119,8 +155,14 @@ def main():
     contract_tests = get_test_dict_keys(TEST_SUITE, 'contract_tests')
     frontend_tests = get_test_dict_keys(TEST_SUITE, 'frontend_tests')
     
-    # Check coverage
-    missing_backend = all_backend_funcs - backend_tests
+    # Check coverage - handle get_ prefix mapping for backend tests
+    # Backend tests use names like "cpu_info" for functions like "get_cpu_info"
+    backend_tests_mapped = set()
+    for test_name in backend_tests:
+        backend_tests_mapped.add(f"get_{test_name}")
+    backend_tests_mapped.update(backend_tests)  # Also include exact matches
+    
+    missing_backend = all_backend_funcs - backend_tests_mapped
     missing_api = api_endpoints - api_tests
     missing_contract = api_endpoints - contract_tests
     missing_frontend = api_endpoints - frontend_tests

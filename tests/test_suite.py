@@ -130,6 +130,49 @@ class TestSuite:
                     "assert 'monitoring_importance' in result",
                     "assert isinstance(result, dict)"
                 ]
+            },
+            # Service Discovery Tests
+            "systemd_services": {
+                "description": "Test systemd services discovery",
+                "module": "modules.service_discovery",
+                "function": "get_systemd_services",
+                "assertions": [
+                    "assert 'services' in result",
+                    "assert 'summary' in result",
+                    "assert 'educational_context' in result",
+                    "assert 'active' in result['services']",
+                    "assert 'inactive' in result['services']",
+                    "assert 'failed' in result['services']",
+                    "assert 'masked' in result['services']",
+                    "assert isinstance(result['services']['active'], list)",
+                    "assert 'total_services' in result['summary']"
+                ]
+            },
+            "service_categories": {
+                "description": "Test service categorization",
+                "module": "modules.service_discovery",
+                "function": "get_service_categories",
+                "assertions": [
+                    "assert 'categories' in result",
+                    "assert 'category_descriptions' in result",
+                    "assert 'System Core' in result['categories']",
+                    "assert 'Network Services' in result['categories']",
+                    "assert 'Desktop Environment' in result['categories']",
+                    "assert isinstance(result['categories'], dict)",
+                    "assert isinstance(result['category_descriptions'], dict)"
+                ]
+            },
+            "critical_services": {
+                "description": "Test critical services monitoring",
+                "module": "modules.service_discovery",
+                "function": "get_critical_services",
+                "assertions": [
+                    "assert 'critical_services' in result",
+                    "assert 'educational_context' in result",
+                    "assert isinstance(result['critical_services'], dict)",
+                    "assert len(result['critical_services']) > 0",
+                    "assert 'what_are_critical_services' in result['educational_context']"
+                ]
             }
         }
         
@@ -181,6 +224,19 @@ class TestSuite:
             },
             "system_overview": {
                 "endpoint": "/api/overview",
+                "expected_fields": ["success", "data", "educational_note"]
+            },
+            # Service Discovery API Tests
+            "services_discovery": {
+                "endpoint": "/api/services",
+                "expected_fields": ["success", "data", "educational_note"]
+            },
+            "service_categories": {
+                "endpoint": "/api/services/categories",
+                "expected_fields": ["success", "data", "educational_note"]
+            },
+            "critical_services": {
+                "endpoint": "/api/services/critical",
                 "expected_fields": ["success", "data", "educational_note"]
             }
         }

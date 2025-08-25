@@ -40,7 +40,8 @@ A lightweight Flask monitoring application that helps learn Linux fundamentals b
 ### Phase 1: Foundation & Learning (Local System)
 
 - [x] **Branch 1: "setup-system-monitoring"** - Basic system info collection (CPU, memory, processes)
-- [ ] **Branch 2: "add-service-discovery"** - Discover and categorize systemd services with educational descriptions
+- [x] **Branch 2: "add-service-discovery"** - Discover and categorize systemd services with educational descriptions
+- [ ] **Branch 2.5: "redesign-testing-framework"** - Replace custom test coverage checker with industry-standard coverage tools (coverage.py/pytest-cov)
 - [ ] **Branch 3: "create-monitoring-dashboard"** - Web dashboard for system overview and service status
 
 ### Phase 2: Process Intelligence & Performance
@@ -64,10 +65,11 @@ A lightweight Flask monitoring application that helps learn Linux fundamentals b
 ## Current Status
 
 - **Active Phase**: Phase 1
-- **Last Updated**: 2025-08-25 07:25:19
-- **Completed Features**: 1/12
-- **Next Branch**: add-service-discovery
-- **Branch 1 Complete**: ✅ System monitoring (CPU, memory, disk, processes) with educational context
+- **Last Updated**: 2025-08-25 08:00:00
+- **Completed Features**: 2/12
+- **Next Branch**: redesign-testing-framework
+- **Branch 2 Complete**: ✅ Service discovery with systemd integration, categorization, and educational context
+- **Critical Next Step**: Replace custom test coverage automation with industry-standard Python coverage tools
 
 ## Safety & Learning Guidelines
 
@@ -91,6 +93,8 @@ A lightweight Flask monitoring application that helps learn Linux fundamentals b
 _Add key decisions, architectural choices, and lessons learned here_
 
 ### Completed Features
+
+- **2025-08-25**: Started: Discover and categorize systemd services with educational descriptions
 
 - **2025-08-25**: Completed: Add basic system monitoring: CPU, memory, and process monitoring with educational context
 - **2025-08-25**: Started: Add basic system monitoring: CPU, memory, and process monitoring with educational context

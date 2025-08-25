@@ -25,6 +25,11 @@ from system_monitor import (
     get_system_overview,
     get_educational_context
 )
+from service_discovery import (
+    get_systemd_services,
+    get_service_categories,
+    get_critical_services
+)
 
 app = Flask(__name__)
 
@@ -68,7 +73,10 @@ def api_docs():
             {"path": "/api/disk", "method": "GET", "description": "Disk usage information"},
             {"path": "/api/processes", "method": "GET", "description": "Top processes information"},
             {"path": "/api/overview", "method": "GET", "description": "Complete system overview"},
-            {"path": "/api/education", "method": "GET", "description": "Educational context for monitoring"}
+            {"path": "/api/education", "method": "GET", "description": "Educational context for monitoring"},
+            {"path": "/api/services", "method": "GET", "description": "All systemd services with status"},
+            {"path": "/api/services/categories", "method": "GET", "description": "Services organized by functional categories"},
+            {"path": "/api/services/critical", "method": "GET", "description": "Critical system services status"}
         ]
     })
 
@@ -174,6 +182,59 @@ def api_education():
             "success": False,
             "error": str(e),
             "message": "Failed to retrieve educational context"
+        }), 500
+
+# Service Discovery API Endpoints
+
+@app.route('/api/services')
+def api_services():
+    """Get all systemd services with status and educational context"""
+    try:
+        services_data = get_systemd_services()
+        return jsonify({
+            "success": True,
+            "data": services_data,
+            "educational_note": "systemd services are background programs that provide system functionality. Monitor them to understand your system."
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "message": "Failed to retrieve systemd services"
+        }), 500
+
+@app.route('/api/services/categories')
+def api_services_categories():
+    """Get services organized by functional categories"""
+    try:
+        categories_data = get_service_categories()
+        return jsonify({
+            "success": True,
+            "data": categories_data,
+            "educational_note": "Categorizing services helps understand different system functions and their dependencies."
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "message": "Failed to retrieve service categories"
+        }), 500
+
+@app.route('/api/services/critical')
+def api_services_critical():
+    """Get critical system services that should always be running"""
+    try:
+        critical_data = get_critical_services()
+        return jsonify({
+            "success": True,
+            "data": critical_data,
+            "educational_note": "Critical services are essential for basic system operation. Monitor them closely for system health."
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "message": "Failed to retrieve critical services"
         }), 500
 
 if __name__ == '__main__':
