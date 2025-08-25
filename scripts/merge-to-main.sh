@@ -49,11 +49,20 @@ fi
 echo "✅ All tests passed!"
 echo ""
 
-# Step 3: Commit and backup
+# Step 3: Update roadmap and commit
 echo "💾 STEP 3: COMMIT AND BACKUP"
 echo "============================"
 echo "📦 Staging changes..."
 git add -A
+
+# Update roadmap to mark branch as completed BEFORE committing
+if [ -f "ROADMAP.md" ]; then
+    echo "📝 Updating roadmap..."
+    # Simple approach - just update the checkbox for this branch
+    sed -i "/${CURRENT_BRANCH}/s/- \[ \]/- [x]/" ROADMAP.md
+    echo "✅ Marked $CURRENT_BRANCH as completed in roadmap"
+    git add ROADMAP.md
+fi
 
 echo "💾 Creating commit..."
 git commit -m "$COMMIT_MESSAGE"
@@ -73,11 +82,6 @@ git merge "$CURRENT_BRANCH"
 
 echo "☁️  Pushing to main..."
 git push origin main
-
-# Update roadmap to mark branch as completed
-if [ -f "scripts/update-roadmap.sh" ]; then
-    ./scripts/update-roadmap.sh "$CURRENT_BRANCH" "$COMMIT_MESSAGE" "completed"
-fi
 echo ""
 
 # Step 5: Cleanup

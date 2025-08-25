@@ -1,0 +1,5 @@
+# Testing simplified roadmap updates
+
+The merge script now uses a simple sed command instead of a complex 105-line script.
+
+This should work much better!
