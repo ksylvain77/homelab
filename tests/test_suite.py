@@ -47,18 +47,90 @@ class TestSuite:
         self.log("🔬 PHASE 1: BACKEND FUNCTION TESTING", "TEST")
         self.log("=" * 60)
         
-        # DRY configuration - customize for your project
+        # DRY configuration - System Monitoring Tests
         backend_tests = {
-            "core_function": {
-                "description": "Test core functionality",
-                "module": "modules.core",  # Customize
-                "function": "get_status",   # Customize
+            "cpu_info": {
+                "description": "Test CPU information retrieval",
+                "module": "modules.system_monitor",
+                "function": "get_cpu_info",
                 "assertions": [
-                    "assert 'status' in result",
-                    "assert result['status'] == 'running'"
+                    "assert 'usage_percent' in result",
+                    "assert isinstance(result['usage_percent'], (int, float))",
+                    "assert 0 <= result['usage_percent'] <= 100",
+                    "assert 'cores' in result",
+                    "assert 'logical' in result['cores']",
+                    "assert 'frequency' in result",
+                    "assert 'timestamp' in result"
                 ]
             },
-            # Add more backend tests here
+            "memory_info": {
+                "description": "Test memory information retrieval",
+                "module": "modules.system_monitor",
+                "function": "get_memory_info",
+                "assertions": [
+                    "assert 'total_gb' in result",
+                    "assert 'used_gb' in result",
+                    "assert 'available_gb' in result",
+                    "assert 'usage_percent' in result",
+                    "assert isinstance(result['usage_percent'], (int, float))",
+                    "assert 0 <= result['usage_percent'] <= 100",
+                    "assert 'status' in result",
+                    "assert 'swap' in result",
+                    "assert 'timestamp' in result"
+                ]
+            },
+            "disk_info": {
+                "description": "Test disk information retrieval",
+                "module": "modules.system_monitor",
+                "function": "get_disk_info",
+                "assertions": [
+                    "assert 'partitions' in result",
+                    "assert isinstance(result['partitions'], dict)",
+                    "assert len(result['partitions']) > 0",
+                    "assert 'timestamp' in result"
+                ]
+            },
+            "top_processes": {
+                "description": "Test top processes retrieval",
+                "module": "modules.system_monitor",
+                "function": "get_top_processes",
+                "assertions": [
+                    "assert 'top_cpu' in result",
+                    "assert 'top_memory' in result",
+                    "assert 'total_processes' in result",
+                    "assert isinstance(result['top_cpu'], list)",
+                    "assert isinstance(result['top_memory'], list)",
+                    "assert isinstance(result['total_processes'], int)",
+                    "assert 'timestamp' in result"
+                ]
+            },
+            "system_overview": {
+                "description": "Test comprehensive system overview",
+                "module": "modules.system_monitor",
+                "function": "get_system_overview",
+                "assertions": [
+                    "assert 'cpu' in result",
+                    "assert 'memory' in result",
+                    "assert 'disk' in result",
+                    "assert 'processes' in result",
+                    "assert 'uptime' in result",
+                    "assert 'timestamp' in result",
+                    "assert 'health_summary' in result"
+                ]
+            },
+            "educational_context": {
+                "description": "Test educational context provider",
+                "module": "modules.system_monitor",
+                "function": "get_educational_context",
+                "assertions": [
+                    "assert 'cpu_usage' in result",
+                    "assert 'memory_usage' in result",
+                    "assert 'disk_usage' in result",
+                    "assert 'processes' in result",
+                    "assert 'monitoring_importance' in result",
+                    "assert isinstance(result, dict)"
+                ]
+            }
         }
         
         for test_name, test_config in backend_tests.items():
@@ -97,9 +169,20 @@ class TestSuite:
         api_tests = {
             "health_endpoint": {
                 "endpoint": "/health",
-                "expected_fields": ["status"]  # Customize
+                "expected_fields": ["status", "service", "timestamp"]
             },
-            # Add more API tests here
+            "cpu_monitoring": {
+                "endpoint": "/api/cpu",
+                "expected_fields": ["success", "data", "educational_note"]
+            },
+            "memory_monitoring": {
+                "endpoint": "/api/memory", 
+                "expected_fields": ["success", "data", "educational_note"]
+            },
+            "system_overview": {
+                "endpoint": "/api/overview",
+                "expected_fields": ["success", "data", "educational_note"]
+            }
         }
         
         for test_name, test_config in api_tests.items():

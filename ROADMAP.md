@@ -39,7 +39,7 @@ A lightweight Flask monitoring application that helps learn Linux fundamentals b
 
 ### Phase 1: Foundation & Learning (Local System)
 
-- [ ] **Branch 1: "setup-system-monitoring"** - Basic system info collection (CPU, memory, processes)
+- [x] **Branch 1: "setup-system-monitoring"** - Basic system info collection (CPU, memory, processes)
 - [ ] **Branch 2: "add-service-discovery"** - Discover and categorize systemd services with educational descriptions
 - [ ] **Branch 3: "create-monitoring-dashboard"** - Web dashboard for system overview and service status
 
@@ -64,9 +64,10 @@ A lightweight Flask monitoring application that helps learn Linux fundamentals b
 ## Current Status
 
 - **Active Phase**: Phase 1
-- **Last Updated**: 2025-08-25 10:50:00
-- **Completed Features**: 0/12
-- **Next Branch**: setup-system-monitoring
+- **Last Updated**: 2025-08-25 07:25:19
+- **Completed Features**: 1/12
+- **Next Branch**: add-service-discovery
+- **Branch 1 Complete**: ✅ System monitoring (CPU, memory, disk, processes) with educational context
 
 ## Safety & Learning Guidelines
 
@@ -90,6 +91,9 @@ A lightweight Flask monitoring application that helps learn Linux fundamentals b
 _Add key decisions, architectural choices, and lessons learned here_
 
 ### Completed Features
+
+- **2025-08-25**: Completed: Add basic system monitoring: CPU, memory, and process monitoring with educational context
+- **2025-08-25**: Started: Add basic system monitoring: CPU, memory, and process monitoring with educational context
 
 - **2025-08-24**: Completed: Weather API completed
 - **2025-08-24**: Completed: Weather API completed

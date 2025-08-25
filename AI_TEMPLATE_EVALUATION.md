@@ -47,10 +47,11 @@ This evaluation documents the AI development experience building a homelab monit
 
 ## Critical Template Issues Discovered
 
-### 🚨 **Issue #1: Missing GitHub Repository Setup**
+### 🚨 **Issue #1: Missing GitHub Repository Setup** ✅ **RESOLVED**
 
 **Severity**: Critical  
 **Found**: August 25, 2025 during workflow setup  
+**Resolved**: August 25, 2025 using GitHub CLI  
 **Problem**: Template assumes GitHub repository already exists but provides no setup automation
 **Details**:
 
@@ -59,8 +60,10 @@ This evaluation documents the AI development experience building a homelab monit
 - No guidance on repository visibility or initial setup
 - Workflow breaks before development can begin
 
-**Impact**: Cannot execute AI-native workflow without manual GitHub setup  
-**Recommendation**: Add repository setup to `manage.sh` or create dedicated setup script with GitHub CLI integration
+**Resolution**: Successfully created repository using `gh repo create homelab --public --source=. --remote=origin --push`  
+**Repository**: https://github.com/ksylvain77/homelab  
+**Impact**: GitHub repository now established, AI-native workflow can proceed  
+**Template Recommendation**: Add repository setup to `manage.sh` or create dedicated setup script with GitHub CLI integration
 
 ### 🚨 **Issue #2: Generic Evaluation Template**
 
@@ -76,6 +79,63 @@ This evaluation documents the AI development experience building a homelab monit
 
 **Impact**: Manual intervention required for evaluation setup, breaks AI-native automation flow  
 **Recommendation**: Template should auto-generate project-specific evaluation files with project name, goals, and relevant context pre-filled
+
+### 🚨 **Issue #3: AI Workflow Discipline Breakdown** ✅ **RESOLVED**
+
+**Severity**: High  
+**Found**: August 25, 2025 during Branch 1 development  
+**Resolved**: August 25, 2025 by following proper template workflow  
+**Problem**: AI violating template principles during implementation, struggling with basic workflow
+
+**Resolution**: Returned to template fundamentals - used `./manage.sh start`, `.venv/bin/python tests/`, and proper roadmap update workflow. All tests now passing (12/12).  
+**Key Learning**: Template workflow automation is excellent when followed properly
+
+### 🚨 **Issue #4: Roadmap Update Script Automation Failure**
+
+**Severity**: High  
+**Found**: August 25, 2025 during roadmap update  
+**Problem**: `update-roadmap.sh` reports success but fails to actually update roadmap checkboxes
+**Root Cause Analysis**:
+
+**Script Pattern**: `^- \[ \] \*\*setup-system-monitoring\*\*`  
+**Actual Roadmap**: `- [ ] **Branch 1: "setup-system-monitoring"** - Basic system info collection`
+
+**Specific Issues**:
+
+- Script expects `**branch-name**` but roadmap has `**Branch 1: "branch-name"**`
+- Script doesn't account for branch numbering format
+- Script doesn't handle quoted branch names
+- Pattern matching is too rigid for actual roadmap structure
+- False positive reporting - claims success when no changes made
+
+**Impact**: Roadmap tracking broken, manual intervention required for all updates  
+**Evidence**: Script output claimed "✅ Marked setup-system-monitoring as completed" but checkbox remains `[ ]` instead of `[x]`
+
+**Template Recommendation**:
+
+1. Fix pattern matching to handle actual roadmap format
+2. Add validation that changes were actually made
+3. Provide better error reporting when patterns don't match
+4. Make roadmap format more consistent with script expectations
+
+### 🚨 **Issue #5: Test Coverage Checker False Negatives**
+
+**Severity**: High  
+**Found**: August 25, 2025 during merge attempt  
+**Problem**: Test coverage checker fails to recognize properly implemented tests, blocking merge
+**Evidence**:
+
+- Manual test run: 12/12 tests passing (100% success rate)
+- Coverage checker claims: Missing backend tests for system monitoring functions
+- Coverage checker claims: Missing API tests for `/api/cpu`, `/api/memory`, etc.
+- All claimed "missing" tests are actually implemented and passing
+
+**Root Cause**: Test coverage validation script cannot properly parse our test suite format or recognize implemented tests
+
+**Impact**: Merge workflow completely blocked despite 100% working implementation and test coverage  
+**Automation Reliability**: Another critical automation failure preventing workflow completion
+
+**Template Recommendation**: Fix test coverage checker to properly recognize implemented tests or provide override mechanism for false negatives
 
 ---
 
