@@ -6,7 +6,7 @@ homelab monitoring system
 Entry point for the homelab application.
 """
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 import os
 import sys
 from pathlib import Path
@@ -44,22 +44,27 @@ def health():
 
 @app.route('/')
 def home():
-    """Home endpoint"""
-    status = get_status()
-    return jsonify({
-        "message": "Welcome to homelab",
-        "description": "homelab monitoring system",
-        "status": status,
-        "endpoints": {
-            "health": "/health",
-            "home": "/",
-            "api_docs": "/api"
-        }
-    })
+    """Redirect to dashboard"""
+    return render_template('dashboard.html')
+
+@app.route('/dashboard')
+def dashboard():
+    """Main dashboard page"""
+    return render_template('dashboard.html')
+
+@app.route('/services')
+def services_page():
+    """Services monitoring page"""
+    return render_template('services.html')
 
 @app.route('/api')
 def api_docs():
-    """API documentation endpoint"""
+    """API documentation endpoint - return JSON for API or render template for web"""
+    # Check if request is from a browser (Accept header includes text/html)
+    from flask import request
+    if 'text/html' in request.headers.get('Accept', ''):
+        return render_template('dashboard.html')
+    
     return jsonify({
         "name": "homelab API",
         "version": "0.1.0",

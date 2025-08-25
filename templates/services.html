@@ -1,0 +1,296 @@
+{% extends "base.html" %} {% block title %}Services - Homelab Monitor{% endblock
+%} {% block content %}
+<div class="row">
+  <div class="col-12 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <h2>
+        <i class="fas fa-cogs me-2"></i>
+        System Services
+      </h2>
+      <div class="d-flex align-items-center">
+        <button
+          class="btn btn-outline-primary me-2"
+          onclick="refreshServices()"
+        >
+          <i class="fas fa-sync-alt me-1"></i>Refresh
+        </button>
+        <div class="educational-badge">
+          <button
+            class="btn btn-outline-info"
+            data-bs-toggle="modal"
+            data-bs-target="#servicesEducationModal"
+          >
+            <i class="fas fa-question-circle me-1"></i>Learn About Services
+          </button>
+        </div>
+      </div>
+    </div>
+    <p class="text-muted">
+      systemd services are background programs that provide essential system
+      functionality. Understanding services helps you manage and troubleshoot
+      your Linux system.
+    </p>
+  </div>
+</div>
+
+<!-- Service Categories Tabs -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <ul
+          class="nav nav-tabs card-header-tabs"
+          id="serviceTabs"
+          role="tablist"
+        >
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link active"
+              id="critical-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#critical"
+              type="button"
+              role="tab"
+            >
+              <i class="fas fa-exclamation-triangle me-1"></i>Critical Services
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="categories-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#categories"
+              type="button"
+              role="tab"
+            >
+              <i class="fas fa-layer-group me-1"></i>By Category
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="all-services-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#all-services"
+              type="button"
+              role="tab"
+            >
+              <i class="fas fa-list me-1"></i>All Services
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card-body">
+        <div class="tab-content" id="serviceTabContent">
+          <!-- Critical Services Tab -->
+          <div class="tab-pane fade show active" id="critical" role="tabpanel">
+            <div class="row mb-3">
+              <div class="col-12">
+                <div class="alert alert-info">
+                  <i class="fas fa-info-circle me-2"></i>
+                  <strong>Critical Services:</strong> These services are
+                  essential for basic system operation. If any of these fail,
+                  your system may not function properly.
+                </div>
+              </div>
+            </div>
+            <div id="critical-services-content">
+              <div class="text-center py-3">
+                <i class="fas fa-spinner fa-spin me-2"></i>Loading critical
+                services...
+              </div>
+            </div>
+          </div>
+
+          <!-- Categories Tab -->
+          <div class="tab-pane fade" id="categories" role="tabpanel">
+            <div class="row mb-3">
+              <div class="col-12">
+                <div class="alert alert-success">
+                  <i class="fas fa-layer-group me-2"></i>
+                  <strong>Service Categories:</strong> Services are grouped by
+                  function to help you understand different aspects of your
+                  system.
+                </div>
+              </div>
+            </div>
+            <div id="categories-content">
+              <div class="text-center py-3">
+                <i class="fas fa-spinner fa-spin me-2"></i>Loading service
+                categories...
+              </div>
+            </div>
+          </div>
+
+          <!-- All Services Tab -->
+          <div class="tab-pane fade" id="all-services" role="tabpanel">
+            <div class="row mb-3">
+              <div class="col-12">
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-search"></i>
+                  </span>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="serviceFilter"
+                    placeholder="Filter services by name or description..."
+                  />
+                </div>
+              </div>
+            </div>
+            <div id="all-services-content">
+              <div class="text-center py-3">
+                <i class="fas fa-spinner fa-spin me-2"></i>Loading all
+                services...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Services Education Modal -->
+<div class="modal fade" id="servicesEducationModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-graduation-cap me-2"></i>
+          Understanding systemd Services
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12 mb-3">
+            <h6>
+              <i class="fas fa-question-circle me-2"></i>What are systemd
+              Services?
+            </h6>
+            <p>
+              systemd services are background programs (daemons) that provide
+              essential system functionality. They can start automatically at
+              boot time and run continuously in the background.
+            </p>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <h6><i class="fas fa-play me-2"></i>Service States</h6>
+            <ul class="list-unstyled">
+              <li>
+                <span class="badge bg-success me-2">active</span>Service is
+                running normally
+              </li>
+              <li>
+                <span class="badge bg-secondary me-2">inactive</span>Service is
+                stopped
+              </li>
+              <li>
+                <span class="badge bg-danger me-2">failed</span>Service failed
+                to start or crashed
+              </li>
+              <li>
+                <span class="badge bg-warning me-2">activating</span>Service is
+                starting up
+              </li>
+            </ul>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <h6><i class="fas fa-layer-group me-2"></i>Common Categories</h6>
+            <ul class="list-unstyled">
+              <li><strong>System:</strong> Core system services</li>
+              <li><strong>Network:</strong> Networking and connectivity</li>
+              <li>
+                <strong>Security:</strong> Authentication and access control
+              </li>
+              <li><strong>Hardware:</strong> Device and hardware management</li>
+              <li>
+                <strong>Desktop:</strong> User interface and desktop environment
+              </li>
+            </ul>
+          </div>
+
+          <div class="col-12">
+            <h6><i class="fas fa-lightbulb me-2"></i>Why Monitor Services?</h6>
+            <p>Monitoring services helps you:</p>
+            <ul>
+              <li>Ensure critical system functions are running</li>
+              <li>Identify failed services that need attention</li>
+              <li>Understand what's running on your system</li>
+              <li>Troubleshoot system problems</li>
+              <li>Learn about Linux system administration</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          <i class="fas fa-check me-1"></i>Got it!
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Service Detail Modal -->
+<div class="modal fade" id="serviceDetailModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-cog me-2"></i>
+          Service Details: <span id="service-name"></span>
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body" id="service-detail-content">
+        <!-- Service details will be loaded here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_scripts %}
+<script>
+  // Load services data on page load
+  document.addEventListener('DOMContentLoaded', function () {
+    loadCriticalServices();
+    loadServiceCategories();
+    loadAllServices();
+
+    // Setup filter for all services
+    document
+      .getElementById('serviceFilter')
+      .addEventListener('input', filterServices);
+  });
+
+  // Tab change handlers
+  document
+    .getElementById('critical-tab')
+    .addEventListener('shown.bs.tab', loadCriticalServices);
+  document
+    .getElementById('categories-tab')
+    .addEventListener('shown.bs.tab', loadServiceCategories);
+  document
+    .getElementById('all-services-tab')
+    .addEventListener('shown.bs.tab', loadAllServices);
+</script>
+{% endblock %}

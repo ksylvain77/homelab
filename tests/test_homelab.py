@@ -368,8 +368,114 @@ class TestSystemIntegration:
         response = requests.get(BASE_URL, timeout=TIMEOUT)
         
         assert response.status_code == 200
-        # The homelab app returns JSON, not HTML for the main endpoint
-        assert 'application/json' in response.headers.get('content-type', '')
+        # The dashboard now returns HTML
+        assert 'text/html' in response.headers.get('content-type', '')
+        assert 'Homelab Monitor' in response.text
+        
+    @pytest.mark.system
+    def test_dashboard_route(self):
+        """Test the explicit dashboard route"""
+        if not TestHelpers.check_service_running():
+            pytest.skip("Homelab service is not running")
+            
+        response = requests.get(f"{BASE_URL}/dashboard", timeout=TIMEOUT)
+        
+        assert response.status_code == 200
+        assert 'text/html' in response.headers.get('content-type', '')
+        assert 'System Overview' in response.text
+        
+    @pytest.mark.system
+    def test_dashboard_api_data_consistency(self):
+        """Test that dashboard APIs return valid data that the frontend can use"""
+        if not TestHelpers.check_service_running():
+            pytest.skip("Homelab service is not running")
+        
+        # Test overview API - this is what dashboard uses
+        response = requests.get(f"{BASE_URL}/api/overview", timeout=TIMEOUT)
+        assert response.status_code == 200
+        overview_data = response.json()
+        
+        assert overview_data["success"] is True
+        data = overview_data["data"]
+        
+        # Validate CPU data structure
+        assert "cpu" in data
+        cpu = data["cpu"]
+        assert "usage_percent" in cpu
+        assert isinstance(cpu["usage_percent"], (int, float))
+        assert 0 <= cpu["usage_percent"] <= 100
+        assert "cores" in cpu
+        assert "logical" in cpu["cores"]
+        
+        # Validate Memory data structure  
+        assert "memory" in data
+        memory = data["memory"]
+        assert "usage_percent" in memory
+        assert "used_gb" in memory
+        assert "total_gb" in memory
+        assert isinstance(memory["usage_percent"], (int, float))
+        assert 0 <= memory["usage_percent"] <= 100
+        
+        # Validate Disk data structure
+        assert "disk" in data
+        disk = data["disk"]
+        assert "partitions" in disk
+        assert "/" in disk["partitions"]  # Root partition should exist
+        root_partition = disk["partitions"]["/"]
+        assert "usage_percent" in root_partition
+        assert "total_gb" in root_partition
+        assert isinstance(root_partition["usage_percent"], (int, float))
+        
+        # Test processes API 
+        response = requests.get(f"{BASE_URL}/api/processes", timeout=TIMEOUT)
+        assert response.status_code == 200
+        processes_data = response.json()
+        
+        assert processes_data["success"] is True
+        proc_data = processes_data["data"]
+        assert "top_cpu" in proc_data
+        assert "top_memory" in proc_data
+        assert isinstance(proc_data["top_cpu"], list)
+        
+        # Validate process data structure
+        if proc_data["top_cpu"]:
+            proc = proc_data["top_cpu"][0]
+            assert "name" in proc
+            assert "pid" in proc  
+            assert "cpu_percent" in proc
+            assert "memory_percent" in proc
+            assert isinstance(proc["cpu_percent"], (int, float))
+            assert isinstance(proc["memory_percent"], (int, float))
+        
+        # Test critical services API
+        response = requests.get(f"{BASE_URL}/api/services/critical", timeout=TIMEOUT)
+        assert response.status_code == 200
+        critical_data = response.json()
+        
+        assert critical_data["success"] is True
+        crit_data = critical_data["data"]
+        assert "critical_services" in crit_data
+        assert isinstance(crit_data["critical_services"], dict)
+        
+        # Validate critical service data structure
+        if crit_data["critical_services"]:
+            service_name, service_info = next(iter(crit_data["critical_services"].items()))
+            assert "status" in service_info
+            assert "importance" in service_info
+            assert "is_critical" in service_info
+            assert service_info["is_critical"] is True
+    
+    @pytest.mark.system
+    def test_services_page_loads(self):
+        """Test that the services page loads properly"""
+        if not TestHelpers.check_service_running():
+            pytest.skip("Homelab service is not running")
+            
+        response = requests.get(f"{BASE_URL}/services", timeout=TIMEOUT)
+        
+        assert response.status_code == 200
+        assert 'text/html' in response.headers.get('content-type', '')
+        assert 'System Services' in response.text
 
     @pytest.mark.system
     def test_monitoring_data_freshness(self):
