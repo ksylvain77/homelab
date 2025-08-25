@@ -1,0 +1,49 @@
+# Coverage configuration for homelab project
+# Practical coverage for a home monitoring system
+
+# Coverage configuration for homelab project
+# Comprehensive coverage for all business logic
+
+[run]
+source = modules
+omit = 
+    # Virtual environment
+    .venv/*
+    venv/*
+    
+    # Test files themselves
+    tests/*
+    
+    # Cache and build files
+    __pycache__/*
+    *.pyc
+    
+    # Config and utility scripts (not business logic)
+    scripts/*
+
+[report]
+# For a homelab project, 80% is a proper target when testing ALL functions
+fail_under = 80
+precision = 1
+skip_covered = false
+skip_empty = true
+
+# Show which lines are missing coverage
+show_missing = true
+
+# Exclude common utility patterns that don't need testing
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    def __str__
+    if __name__ == .__main__.:
+    raise AssertionError
+    raise NotImplementedError
+    pass
+    # Utility logging functions
+    \.log\(
+    \.debug\(
+
+[html]
+directory = htmlcov
+title = Homelab Coverage Report
